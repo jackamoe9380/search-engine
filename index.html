@@ -24,155 +24,155 @@
             background: white;
         }
 
-        #search-container {
+        .search-wrapper {
             width: 100%;
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 12px;
+            padding: 20px;
         }
 
-        /*
-         * Keep Google's search element responsive.
-         */
-        .gsc-control-cse {
-            width: 100% !important;
-            padding: 0 !important;
-            border: 0 !important;
-            background: transparent !important;
+        .search-box {
+            display: flex;
+            gap: 10px;
+            width: 100%;
         }
 
-        .gsc-search-box {
-            width: 100% !important;
+        #search-input {
+            flex: 1;
+            min-width: 0;
+            height: 50px;
+            padding: 0 16px;
+            font-size: 17px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            outline: none;
         }
 
-        .gsc-input-box {
-            min-height: 44px !important;
-            border-radius: 10px !important;
+        #search-input:focus {
+            border-color: #4285f4;
         }
 
-        .gsc-search-button-v2 {
-            min-height: 44px !important;
-            min-width: 50px !important;
-            border-radius: 10px !important;
+        #search-button {
+            height: 50px;
+            padding: 0 24px;
+            border: 0;
+            border-radius: 10px;
+            background: #4285f4;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
         }
 
-        /*
-         * Make results fit smaller screens.
-         */
-        .gsc-results {
-            width: 100% !important;
-        }
-
-        .gsc-result {
-            width: 100% !important;
-            padding: 14px 4px !important;
-        }
-
-        .gs-title {
-            font-size: 18px !important;
-        }
-
-        .gs-visibleUrl {
-            word-break: break-word;
+        #search-button:hover {
+            opacity: 0.9;
         }
 
         @media (max-width: 600px) {
-            #search-container {
-                padding: 6px;
+
+            .search-wrapper {
+                padding: 12px;
             }
 
-            .gs-title {
-                font-size: 16px !important;
+            .search-box {
+                flex-direction: column;
             }
 
-            .gsc-result {
-                padding: 12px 2px !important;
+            #search-input,
+            #search-button {
+                width: 100%;
             }
         }
     </style>
-
-    <!-- Google Programmable Search -->
-    <script
-        async
-        src="https://cse.google.com/cse.js?cx=1759385bff2884f71">
-    </script>
 </head>
 
 <body>
 
-    <div id="search-container">
+<div class="search-wrapper">
 
-        <div class="gcse-search"></div>
+    <form id="search-form">
 
-    </div>
+        <div class="search-box">
 
-    <script>
-        /*
-         * Wait for Google's search results to appear.
-         * Then attach our own click handler to result links.
-         */
+            <input
+                id="search-input"
+                type="search"
+                placeholder="Search..."
+                autocomplete="off"
+                required
+            >
 
-        const observer = new MutationObserver(function () {
+            <button
+                id="search-button"
+                type="submit">
+                Search
+            </button>
 
-            const links = document.querySelectorAll(
-                ".gsc-result a.gs-title"
-            );
+        </div>
 
-            links.forEach(function (link) {
+    </form>
 
-                if (link.dataset.aboutBlankHandler) {
-                    return;
-                }
+</div>
 
-                link.dataset.aboutBlankHandler = "true";
+<script>
 
-                link.addEventListener("click", function (event) {
+const SEARCH_ENGINE_ID =
+    "1759385bff2884f71";
 
-                    event.preventDefault();
-                    event.stopPropagation();
+const searchForm =
+    document.getElementById("search-form");
 
-                    const url = link.href;
+const searchInput =
+    document.getElementById("search-input");
 
-                    if (!url) {
-                        return;
-                    }
 
-                    /*
-                     * Open a blank tab first.
-                     */
-                    const newWindow =
-                        window.open("about:blank", "_blank");
+searchForm.addEventListener("submit", function(event) {
 
-                    /*
-                     * If the browser blocked the popup,
-                     * tell the user what happened.
-                     */
-                    if (!newWindow) {
-                        alert(
-                            "Please allow pop-ups for this search page."
-                        );
-                        return;
-                    }
+    event.preventDefault();
 
-                    /*
-                     * Navigate the blank page to the
-                     * selected search result.
-                     */
-                    newWindow.location.replace(url);
-                });
-            });
+    const query =
+        searchInput.value.trim();
 
-        });
+    if (!query) {
+        return;
+    }
 
-        /*
-         * Watch the search-result area because Google
-         * dynamically creates and replaces results.
-         */
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-    </script>
+    /*
+     * Build the Google Programmable Search URL.
+     */
+    const searchURL =
+        "https://cse.google.com/cse?cx=" +
+        encodeURIComponent(SEARCH_ENGINE_ID) +
+        "&q=" +
+        encodeURIComponent(query);
+
+    /*
+     * Create a completely blank browsing context.
+     */
+    const newWindow =
+        window.open("about:blank", "_blank");
+
+    /*
+     * Check whether the browser blocked it.
+     */
+    if (!newWindow) {
+
+        alert(
+            "Your browser blocked the new tab. " +
+            "Please allow pop-ups for this site."
+        );
+
+        return;
+    }
+
+    /*
+     * Navigate the blank page to Google CSE.
+     */
+    newWindow.location.href =
+        searchURL;
+
+});
+
+</script>
 
 </body>
 </html>
