@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,10 +17,10 @@
     }
 
     iframe {
-      display: block;
       width: 100%;
       height: 100vh;
       border: 0;
+      display: block;
     }
   </style>
 </head>
@@ -29,8 +28,14 @@
 <body>
 
   <iframe
-    id="site"
-    sandbox="allow-scripts allow-forms allow-modals allow-pointer-lock"
+    id="embeddedSite"
+    sandbox="
+      allow-scripts
+      allow-same-origin
+      allow-forms
+      allow-modals
+      allow-pointer-lock
+    "
     allow="fullscreen; autoplay"
     referrerpolicy="no-referrer">
   </iframe>
@@ -41,10 +46,8 @@
 
     const newURL = atob(URL);
 
-    // Load it into the sandboxed iframe
-    document.getElementById("site").src = newURL;
+    document.getElementById("embeddedSite").src = newURL;
   </script>
 
 </body>
 </html>
-```
